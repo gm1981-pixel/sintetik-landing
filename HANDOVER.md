@@ -211,3 +211,25 @@ sintetikmedia.ru/form.html?clientbase_hash=XXXXX
 - Добавить ссылку на `form.html` в кнопки лендинга (пока кнопки ведут на боты MAX/Telegram, форма — отдельная страница для рассылки персональных ссылок).
 - Проверить на реальном сервере предзаполнение формы по хэшу (см. п.7).
 - При необходимости — версия cb_proxy.php на `file_get_contents` вместо cURL.
+
+---
+
+## 11. Выкладка на хостинг: update.php
+
+Код сайта — в GitHub: https://github.com/gm1981-pixel/sintetik-landing (публичный). На хостинг выкладывается ветка `main`.
+
+**Как работает.** `update.php` в корне сайта сам скачивает архив последнего коммита `main` через API GitHub и раскладывает файлы в папку сайта. Shell, `exec` и git на хостинге не нужны — только PHP 7.2+, расширение zip и cURL (или `allow_url_fopen`). Этим он отличается от update.php Кэби, который через `exec` запускает cron-скрипт с `git pull` на VPS.
+- Перезаписываются только изменившиеся файлы; прежние версии — в `.deploy/backups/<дата-время>/` (хранятся 5 последних).
+- Удаляются только файлы, которые скрипт сам выгружал раньше и которых больше нет в репозитории. Созданное на сервере вручную не трогается.
+- На сайт не выкладываются: `HANDOVER.md`, `.gitignore`, `update_config*.php`, `*.zip`, папки `.git/`, `.github/`, `.deploy/`, `audit/`.
+- Последняя строка вывода — `Deployed commit: <sha> <время> <сообщение>`: что сейчас на сайте.
+
+**Первичная настройка на хостинге (один раз):**
+1. Залить `update.php` и `update_config.example.php` в корень сайта.
+2. Скопировать `update_config.example.php` в `update_config.php` и вписать `secret` — случайную строку от 24 символов. **Секрет не коммитить**: репозиторий публичный, `update_config.php` в `.gitignore`.
+3. Проверить: `https://sintetikmedia.ru/update.php?key=СЕКРЕТ&dry=1` — покажет план без изменений.
+4. Выгрузить: `https://sintetikmedia.ru/update.php?key=СЕКРЕТ`.
+
+**Автовыкладка при push (по желанию).** GitHub → Settings → Webhooks → Add webhook: Payload URL `https://sintetikmedia.ru/update.php`, Content type `application/json`, Secret — тот же секрет, событие «Just the push event». Скрипт проверяет подпись `X-Hub-Signature-256` и реагирует только на push в `main`.
+
+**Доступ.** Проверка — по секрету (ключ в запросе или подпись webhook), а не по IP, как у Кэби: ограничение по IP на этом хостинге не настроено. Секрет в адресе попадает в логи веб-сервера — при утечке сменить его в `update_config.php` (и в webhook).

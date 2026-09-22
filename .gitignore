@@ -2,3 +2,7 @@ desktop.ini
 Thumbs.db
 .DS_Store
 *.zip
+
+# Выгрузка update.php: секрет и служебная папка живут только на сервере
+update_config.php
+.deploy/
