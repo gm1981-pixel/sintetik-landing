@@ -1,0 +1,67 @@
+/* Страницы документов: оферта, политика, согласия.
+   Подключается после css/style.css; шапка и футер — общие классы сайта.
+   Вёрстка текста взята со страницы оферты (редакция 21.09.2026). */
+.legal-page { --ink: var(--text); --ink-soft: var(--text-muted); --tint: var(--bg-soft); --line: var(--border); --doc-accent: var(--primary-dark); }
+.legal-page a { color: var(--doc-accent); text-decoration: underline; }
+.legal-page .site-header a, .legal-page .site-footer a { text-decoration: none; }
+.legal-page .site-footer a { color: inherit; }
+.legal-page .site-header .btn-outline { color: var(--primary); }
+
+.legal-hero { max-width: 1120px; margin: 0 auto; padding: 116px 20px 32px; }
+.legal-hero h1 { font-size: clamp(28px, 4.2vw, 42px); line-height: 1.15; margin: 0 0 14px; font-weight: 800; letter-spacing: -0.01em; max-width: 24ch; }
+.legal-hero p { margin: 0; color: var(--ink-soft); max-width: 66ch; }
+.legal-meta { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 15px; color: var(--ink-soft); }
+.legal-meta b { color: var(--ink); font-weight: 600; }
+
+.legal-wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: 1fr; gap: 40px; }
+@media (min-width: 960px) { .legal-wrap { grid-template-columns: 260px minmax(0, 1fr); gap: 56px; } }
+
+.legal-toc { font-size: 15px; }
+@media (min-width: 960px) { .legal-toc { position: sticky; top: 92px; align-self: start; max-height: calc(100vh - 116px); overflow-y: auto; padding-bottom: 24px; } }
+.legal-toc h2 { font-size: 15px; font-weight: 600; margin: 0 0 10px; }
+.legal-toc ol { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); }
+.legal-toc li a { display: block; padding: 5px 0 5px 14px; margin-left: -2px; border-left: 2px solid transparent; color: var(--ink-soft); text-decoration: none; }
+.legal-toc li a:hover { color: var(--ink); }
+.legal-toc li a.active { color: var(--doc-accent); border-left-color: var(--doc-accent); }
+@media (max-width: 959px) {
+  .legal-toc { background: var(--tint); border-radius: 10px; padding: 18px 20px; }
+  .legal-toc ol { border-left: 0; columns: 2 220px; }
+  .legal-toc li a { padding-left: 0; border-left: 0; }
+}
+
+.legal-main { max-width: 74ch; padding-bottom: 80px; line-height: 1.6; }
+.legal-main section { padding-top: 8px; scroll-margin-top: 88px; }
+.legal-main section + section { margin-top: 28px; border-top: 1px solid var(--line); padding-top: 28px; }
+.legal-main h2.s { font-size: 22px; line-height: 1.3; margin: 0 0 14px; font-weight: 700; display: flex; gap: 12px; }
+.legal-main h2.s span.n { color: var(--doc-accent); min-width: 1.6em; }
+.legal-main p { margin: 0 0 10px; }
+.legal-main p.c { padding-left: 3.2em; text-indent: -3.2em; }
+.legal-main p.c b.n { display: inline-block; width: 3.2em; text-indent: 0; font-weight: 600; color: var(--ink-soft); }
+.legal-main p.sub { margin: 0 0 8px; padding-left: 3.2em; }
+.legal-main dl.terms { margin: 0; }
+.legal-main dl.terms dt { font-weight: 600; margin-top: 12px; }
+.legal-main dl.terms dd { margin: 2px 0 0; }
+
+.table-scroll { overflow-x: auto; margin: 12px 0 8px; border: 1px solid var(--line); border-radius: 10px; }
+.legal-main table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 15px; }
+.legal-main th, .legal-main td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.legal-main th { background: var(--tint); font-weight: 600; }
+.legal-main tr:last-child td { border-bottom: 0; }
+.legal-main td.price { white-space: nowrap; font-weight: 600; }
+
+.legal-req { background: var(--tint); border-radius: 12px; padding: 20px 24px; }
+.legal-req dl { display: grid; grid-template-columns: minmax(140px, 200px) 1fr; gap: 8px 20px; margin: 0; }
+.legal-req dt { color: var(--ink-soft); }
+.legal-req dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 520px) { .legal-req dl { grid-template-columns: 1fr; gap: 2px; } .legal-req dd { margin-bottom: 10px; } }
+
+.legal-print { background: none; border: 1px solid rgba(255,255,255,.25); color: inherit; border-radius: 8px; padding: 6px 12px; font: inherit; font-size: .82rem; cursor: pointer; }
+
+@media print {
+  .site-header, .legal-toc, .legal-print, .cookie-banner { display: none !important; }
+  .legal-hero { padding-top: 0; }
+  .legal-wrap { display: block; }
+  .legal-main { max-width: none; }
+  body { font-size: 11pt; color: #000; background: #fff; }
+  .legal-main section { break-inside: avoid-page; }
+}
