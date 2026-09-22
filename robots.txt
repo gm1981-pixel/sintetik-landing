@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /cb_proxy.php
+
+Sitemap: https://sintetikmedia.ru/sitemap.xml
