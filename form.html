@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SintetikMedia — Заявка на демо</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
   <style>
     /* ── Страница формы ── */
@@ -24,8 +23,9 @@
     .k-textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
     .k-submit { width: 100%; margin-top: 8px; padding: 14px; font-size: 1rem; font-weight: 600; border-radius: 100px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; border: none; cursor: pointer; transition: all .25s; box-shadow: 0 4px 16px rgba(99,102,241,.35); }
     .k-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(99,102,241,.45); }
-    .k-submit:disabled { opacity: .6; cursor: default; }
-    .k-consent { display: flex; align-items: flex-start; gap: 10px; margin: 4px 0 20px; }
+    .k-submit:disabled, .k-submit[aria-disabled="true"] { opacity: .6; cursor: default; }
+    .k-consent { display: flex; align-items: flex-start; gap: 10px; margin: 4px 0 12px; }
+    .k-consent:last-of-type { margin-bottom: 20px; }
     .k-consent input { display: none; }
     .k-consent-box { width: 18px; height: 18px; border: 2px solid rgba(99,102,241,.4); border-radius: 4px; flex-shrink: 0; margin-top: 2px; transition: all .2s; position: relative; cursor: pointer; }
     .k-consent input:checked + .k-consent-box { background: var(--primary); border-color: var(--primary); }
@@ -44,19 +44,7 @@
     .form-back { display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; color: var(--primary); font-size: .9rem; font-weight: 600; }
     @media (max-width: 560px) { .form-card { padding: 28px 20px; } .form-main { padding: 90px 16px 40px; } }
   </style>
-
-  <!-- Yandex.Metrika counter -->
-  <script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-      m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-      m[i].l=1*new Date();
-      for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=103486971', 'ym');
-    ym(103486971, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-  </script>
-  <noscript><div><img src="https://mc.yandex.ru/watch/103486971" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-  <!-- /Yandex.Metrika counter -->
+  <!-- Яндекс Метрика запускается из js/cookie.js только после согласия в cookie-баннере -->
 </head>
 <body>
 <div class="form-page">
@@ -114,13 +102,23 @@
           <textarea class="k-textarea" id="f_wishes" placeholder="Расскажите про ваш канал или задачу"></textarea>
         </div>
 
-        <div class="k-consent" id="kConsent">
-          <input type="checkbox" id="f_agree" />
-          <label for="f_agree" class="k-consent-box"></label>
-          <span class="k-consent-text">Нажимая кнопку, вы соглашаетесь с <a href="docs/pk.pdf" target="_blank">политикой обработки персональных данных</a> и <a href="docs/oferta_sintetikmedia.pdf" target="_blank">Офертой</a></span>
+        <div class="k-consent" id="kConsentOffer">
+          <input type="checkbox" id="f_agree_offer" />
+          <label for="f_agree_offer" class="k-consent-box"></label>
+          <label for="f_agree_offer" class="k-consent-text">Я принимаю условия <a href="oferta.html" target="_blank">договора-оферты</a> <span class="req">*</span></label>
+        </div>
+        <div class="k-consent" id="kConsentPdn">
+          <input type="checkbox" id="f_agree_pdn" />
+          <label for="f_agree_pdn" class="k-consent-box"></label>
+          <label for="f_agree_pdn" class="k-consent-text">Я даю <a href="consent.html" target="_blank">согласие на обработку персональных данных</a> и ознакомлен(а) с <a href="policy.html" target="_blank">политикой обработки персональных данных</a> <span class="req">*</span></label>
+        </div>
+        <div class="k-consent" id="kConsentAds">
+          <input type="checkbox" id="f_agree_ads" />
+          <label for="f_agree_ads" class="k-consent-box"></label>
+          <label for="f_agree_ads" class="k-consent-text">Согласен(на) получать рекламные и информационные сообщения SintetikMedia — <a href="consent-ads.html" target="_blank">условия</a>. Отказаться можно в любой момент. Необязательно.</label>
         </div>
 
-        <button class="k-submit" id="kSubmit">Отправить заявку</button>
+        <button class="k-submit" id="kSubmit" aria-disabled="true">Отправить заявку</button>
       </div>
 
       <!-- Успех -->
@@ -144,14 +142,14 @@
       </div>
       <div class="footer-links">
         <div class="footer-col"><div class="footer-col-title">Продукт</div><a href="index.html#how">Как работает</a><a href="index.html#features">Возможности</a><a href="index.html#styles">Стили</a><a href="index.html#pricing">Тарифы</a></div>
-        <div class="footer-col"><div class="footer-col-title">Компания</div><a href="index.html#faq">FAQ</a><a href="docs/pk.pdf" target="_blank">Политика конфиденциальности</a><a href="docs/oferta_sintetikmedia.pdf" target="_blank">Оферта</a></div>
-        <div class="footer-col"><div class="footer-col-title">Контакты</div><a href="mailto:info@sintetikmedia.ru">info@sintetikmedia.ru</a></div>
+        <div class="footer-col"><div class="footer-col-title">Документы</div><a href="oferta.html" target="_blank">Оферта</a><a href="policy.html" target="_blank">Политика обработки персональных данных</a><a href="consent.html" target="_blank">Согласие на обработку персональных данных</a><a href="consent-ads.html" target="_blank">Согласие на рекламные сообщения</a><a href="#" data-cookie-settings>Файлы cookie</a></div>
+        <div class="footer-col"><div class="footer-col-title">Контакты</div><a href="mailto:info@sintetikmedia.ru">info@sintetikmedia.ru</a><a href="index.html#faq">Частые вопросы</a></div>
       </div>
     </div>
     <div class="footer-bottom">
       <div class="container">
-        <span>© 2025 SintetikMedia. Все права защищены.</span>
-        <span>ИНН/КПП: 165700291820 · ОГРН: 304165736000155</span>
+        <span>© 2025–2026 SintetikMedia. Все права защищены.</span>
+        <span>ИП Гарифуллин Марат Мидхатович · ИНН 165700291820 · ОГРНИП 304165736000155 · 420044, Республика Татарстан, г. Казань, пр-кт Ямашева, д. 36, офис 325</span>
       </div>
     </div>
   </footer>
@@ -208,16 +206,25 @@ if (CLIENT_HASH) {
     .catch(() => { /* тихо игнорируем — форма остаётся пустой */ });
 }
 
-// ── Consent подсветка ──
-const consent = document.getElementById('kConsent');
-const agree = document.getElementById('f_agree');
-function highlightConsent() {
+// ── Согласия: оферта и ПДн обязательны, реклама — нет ──
+const CONSENT_VERSION = '2026-09-21'; // редакция текстов оферты и согласий
+const agreeOffer = document.getElementById('f_agree_offer');
+const agreePdn = document.getElementById('f_agree_pdn');
+const agreeAds = document.getElementById('f_agree_ads');
+function highlightConsent(consent) {
   consent.classList.remove('shake', 'highlight');
   void consent.offsetWidth;
   consent.classList.add('shake', 'highlight');
   setTimeout(() => consent.classList.remove('highlight'), 2500);
   setTimeout(() => consent.classList.remove('shake'), 500);
 }
+// Кнопка неактивна, пока не отмечены оба обязательных чекбокса.
+// aria-disabled вместо disabled — чтобы клик доходил до JS и чекбокс подсвечивался.
+function updateSubmit() {
+  document.getElementById('kSubmit').setAttribute('aria-disabled', agreeOffer.checked && agreePdn.checked ? 'false' : 'true');
+}
+agreeOffer.addEventListener('change', updateSubmit);
+agreePdn.addEventListener('change', updateSubmit);
 
 // ── Отправка формы на clientbase ──
 const CB_URL = 'https://sintetik.clientbase.ru/questionare.php';
@@ -231,7 +238,8 @@ let submitted = false;
 submitBtn.addEventListener('click', function() {
   errorBox.textContent = '';
 
-  if (!agree.checked) { highlightConsent(); return; }
+  if (!agreeOffer.checked) { highlightConsent(document.getElementById('kConsentOffer')); return; }
+  if (!agreePdn.checked) { highlightConsent(document.getElementById('kConsentPdn')); return; }
 
   const email = document.getElementById('f_email').value.trim();
   if (!email) {
@@ -269,6 +277,15 @@ submitBtn.addEventListener('click', function() {
   // Передаём хэш обратно — ответ привяжется к нужному клиенту
   if (CLIENT_HASH) addField('hash', CLIENT_HASH);
 
+  // Фиксация согласий (CL-13). Чтобы значения сохранялись в КБ, в анкете 60 нужны поля с такими именами.
+  addField('consent_offer', '1');
+  addField('consent_pdn', '1');
+  addField('consent_ads', agreeAds.checked ? '1' : '0');
+  addField('consent_version', CONSENT_VERSION);
+  addField('consent_time', new Date().toISOString());
+  addField('page_url', window.location.origin + window.location.pathname);
+  addField('form_name', 'demo_form');
+
   addField('k_rand_60', k_form_rand);
   addField('sel', 'save');
 
@@ -291,5 +308,6 @@ document.querySelectorAll('.k-input').forEach(inp => {
   });
 });
 </script>
+<script src="js/cookie.js" defer></script>
 </body>
 </html>
