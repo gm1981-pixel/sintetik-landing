@@ -6,3 +6,6 @@ Thumbs.db
 # Выгрузка update.php: секрет и служебная папка живут только на сервере
 update_config.php
 .deploy/
+
+# служебные файлы приложения Claude
+.claude/
