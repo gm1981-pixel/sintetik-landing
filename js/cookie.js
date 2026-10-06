@@ -1,22 +1,28 @@
 'use strict';
 
-// ── Cookie-баннер и запуск счётчиков только после согласия ──
+// ── Cookie-баннер и запуск счётчиков ──
 // Подключение: <script src="js/cookie.js" defer></script>
 // На странице с трекингом MAX добавить атрибут data-tgtrack="<адрес скрипта tgtrack>".
+//
+// Логика (решение владельца сайта от 06.10.2026):
+//  — при загрузке страницы работает базовый счётчик Яндекс Метрики (визиты, источники, страницы);
+//  — баннер показывается с единственной кнопкой «Принять»;
+//  — нажали «Принять» — подключаются Вебвизор, карта кликов и рекламный трекер tgtrack;
+//  — не нажали — остаётся базовый подсчёт, баннер висит дальше. Кнопки «Отклонить» нет.
 (function () {
   var KEY = 'sm_cookie_consent';
-  var VERSION = '2026-09-21'; // редакция текста баннера
+  var VERSION = '2026-10-06'; // редакция текста баннера
   var METRIKA_ID = 103486971;
   var script = document.currentScript;
   var tgtrackSrc = script && script.getAttribute('data-tgtrack');
   var full = false;   // включён ли расширенный режим (Вебвизор, карта кликов, рекламный трекер)
 
-  function readChoice() {
-    try { var v = JSON.parse(localStorage.getItem(KEY)); return v && v.version === VERSION ? v.choice : null; }
-    catch (e) { return null; }
+  function accepted() {
+    try { var v = JSON.parse(localStorage.getItem(KEY)); return !!v && v.version === VERSION && v.choice === 'accepted'; }
+    catch (e) { return false; }
   }
-  function saveChoice(choice) {
-    try { localStorage.setItem(KEY, JSON.stringify({ choice: choice, version: VERSION, ts: new Date().toISOString(), page: location.href })); }
+  function saveAccepted() {
+    try { localStorage.setItem(KEY, JSON.stringify({ choice: 'accepted', version: VERSION, ts: new Date().toISOString(), page: location.href })); }
     catch (e) {}
   }
 
@@ -67,27 +73,22 @@
     banner.innerHTML =
       '<div class="cookie-banner__text"><strong>Мы используем файлы cookie</strong>' +
       'Технические файлы нужны для работы сайта, а Яндекс Метрика считает посещения и источники переходов. ' +
-      'Запись действий на странице (Вебвизор), карту кликов и учёт переходов в рекламе мы включаем только с вашего согласия. ' +
+      'Нажмите «Принять», чтобы мы также могли смотреть, как пользуются страницами (Вебвизор и карта кликов), ' +
+      'и учитывать переходы из рекламы. Не нажимайте — останется только подсчёт посещений. ' +
       'Подробнее — в <a href="policy.html" target="_blank">политике обработки персональных данных</a>.</div>' +
       '<div class="cookie-banner__actions">' +
-      '<button type="button" class="btn btn-outline btn-sm" data-cookie="accept">Принять</button>' +
-      '<button type="button" class="btn btn-outline btn-sm" data-cookie="reject">Отклонить</button>' +
+      '<button type="button" class="btn btn-primary btn-sm" data-cookie="accept">Принять</button>' +
       '</div>';
     banner.addEventListener('click', function (e) {
-      var b = e.target.closest('[data-cookie]'); if (!b) return;
-      var choice = b.getAttribute('data-cookie') === 'accept' ? 'accepted' : 'rejected';
-      saveChoice(choice);
+      if (!e.target.closest('[data-cookie]')) return;
+      saveAccepted();
       hideBanner();
-      if (choice === 'accepted') {
-        // Метрика уже считает в базовом режиме: сразу подключаем рекламный трекер,
-        // Вебвизор и карта кликов заработают со следующей загрузки страницы.
-        if (!full) {
-          full = true;
-          startTgtrack();
-          window.dispatchEvent(new Event('cookieConsentAccepted'));
-        }
-      } else if (full) {
-        location.reload(); // отзыв согласия — страница без Вебвизора и трекера
+      // Метрика уже считает в базовом режиме: сразу подключаем рекламный трекер,
+      // Вебвизор и карта кликов заработают со следующей загрузки страницы.
+      if (!full) {
+        full = true;
+        startTgtrack();
+        window.dispatchEvent(new Event('cookieConsentAccepted'));
       }
     });
     document.body.appendChild(banner);
@@ -96,14 +97,13 @@
   function hideBanner() { if (banner) banner.hidden = true; }
 
   function init() {
-    var choice = readChoice();
-    if (choice === 'accepted') {
-      startCounters();
+    if (accepted()) {
+      startCounters();                   // Метрика с Вебвизором и картой кликов + tgtrack
     } else {
       startMetrika(false);               // базовый подсчёт посещений — всем
-      if (choice !== 'rejected') showBanner();
+      showBanner();                      // висит, пока не нажмут «Принять»
     }
-    // Ссылка «Файлы cookie» в футере — повторный выбор
+    // Ссылка «Файлы cookie» в футере — показать баннер снова
     document.querySelectorAll('[data-cookie-settings]').forEach(function (a) {
       a.addEventListener('click', function (e) { e.preventDefault(); showBanner(); });
     });
