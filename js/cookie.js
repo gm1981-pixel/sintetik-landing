@@ -48,6 +48,10 @@
       accurateTrackBounce: true,
       trackLinks: true
     });
+    // Вариант A/B-теста (data-ab на <body>) — уходит параметром визита,
+    // чтобы в Метрике можно было сравнить конверсию вариантов.
+    var ab = document.body && document.body.getAttribute('data-ab');
+    if (ab) ym(METRIKA_ID, 'params', { ab: ab });
   }
   function startTgtrack() {
     if (!tgtrackSrc) return;

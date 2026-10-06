@@ -1,0 +1,16 @@
+# Главную страницу отдаёт index.php — он делит трафик между вариантами A и B.
+# Если тест закончен: удалить этот файл и index.php, снова заработает index.html.
+DirectoryIndex index.php index.html
+
+# Служебная папка выгрузки и настройки с секретом — наружу не отдаём
+<FilesMatch "^update_config\.php$">
+  Require all denied
+  <IfModule !mod_authz_core.c>
+    Deny from all
+  </IfModule>
+</FilesMatch>
+RedirectMatch 404 ^/\.deploy(/|$)
+
+# Старые документы: HTML-файлы с расширением .pdf больше не используются
+Redirect 301 /docs/pk.pdf /policy.html
+Redirect 301 /docs/oferta_sintetikmedia.pdf /oferta.html

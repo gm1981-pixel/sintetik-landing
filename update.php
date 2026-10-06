@@ -168,12 +168,21 @@ if (!isset($newFiles['index.html'])) {
 }
 
 // ── 3. План изменений ─────────────────────────────────────
+// Файлы, которые нельзя молча перезаписать, если они уже есть на сервере
+// и их выгружали не мы: у хостинга может быть свой .htaccess.
+$PROTECTED = ['.htaccess'];
+
 $toWrite = [];
+$skipped = [];
 foreach ($newFiles as $rel => $content) {
     $target = $ROOT . '/' . $rel;
     if (!is_file($target)) {
         $toWrite[$rel] = 'новый';
     } elseif (md5_file($target) !== md5($content)) {
+        if (in_array($rel, $PROTECTED, true) && !in_array($rel, $prevFiles, true)) {
+            $skipped[$rel] = 'уже есть на сервере и выгружен не нами — объедините вручную';
+            continue;
+        }
         $toWrite[$rel] = 'изменён';
     }
 }
@@ -188,6 +197,7 @@ foreach ($prevFiles as $rel) {
 say('Файлов в репозитории: ' . count($newFiles) . ', к записи: ' . count($toWrite) . ', к удалению: ' . count($toDelete));
 foreach ($toWrite as $rel => $kind) say("  {$kind}: {$rel}");
 foreach ($toDelete as $rel) say("  удалить: {$rel}");
+foreach ($skipped as $rel => $why) say("  ПРОПУЩЕН: {$rel} — {$why}");
 
 if ($dry) {
     say('Пробный запуск завершён, ничего не изменено.');
@@ -230,7 +240,7 @@ file_put_contents($manifestFile, json_encode([
     'branch'  => $cfg['branch'],
     'time'    => date('c'),
     'backup'  => (count($toWrite) || count($toDelete)) ? $stamp : null,
-    'files'   => array_keys($newFiles),
+    'files'   => array_values(array_diff(array_keys($newFiles), array_keys($skipped))),
 ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 
 $backups = glob($DEPLOY_DIR . '/backups/*', GLOB_ONLYDIR) ?: [];
